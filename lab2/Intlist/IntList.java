@@ -86,6 +86,10 @@ public class IntList {
             return B;
         }
 
+        if (B == null) {
+            return A;
+        }
+
         IntList ptr = A;
         while (ptr.rest != null) {
             ptr = ptr.rest;
