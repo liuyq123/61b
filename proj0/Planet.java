@@ -45,7 +45,7 @@ public class Planet {
 			if (ps[i].equals(this)) {
 				continue;
 			}
-			double total_force = calcForceExertedByX(ps[i]);
+			double total_force = calcForceExertedBy(ps[i]);
 			double dx = ps[i].xxPos - this.xxPos;
 			double distance = calcDistance(ps[i]);
 			x_force += total_force / distance * dx;
@@ -59,7 +59,7 @@ public class Planet {
 			if (ps[i].equals(this)) {
 				continue;
 			}
-			double total_force = calcForceExertedByY(ps[i]);
+			double total_force = calcForceExertedBy(ps[i]);
 			double dy = ps[i].yyPos - this.yyPos;
 			double distance = calcDistance(ps[i]);
 			y_force += total_force / distance * dy;
