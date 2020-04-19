@@ -20,16 +20,11 @@ public class ArrayDeque<T> {
     }
 
     public void addFirst(T item) {
-        if (start != 0) {
-            items[start] = item;
-            start--;
-        } else {
-            addLast(items[size - 1]);
-            for (int i = size - 2; i >= 0; i--) {
-                items[i + 1] = items[i];
-            }
-            items[0] = item;
+        for (int i = size; i > 0; i--) {
+            items[i] = items[i - 1];
         }
+        items[0]= item;
+        size++;
     }
 
     public void printDeque() {
@@ -40,11 +35,11 @@ public class ArrayDeque<T> {
     }
 
     public void addLast(T x) {
-        if (size == items.length + start) {
+        if (size == items.length) {
             resize(size * 2);
         }
 
-        items[start + size] = x;
+        items[size] = x;
         size = size + 1;
     }
 
@@ -75,4 +70,5 @@ public class ArrayDeque<T> {
         size = size - 1;
         return x;
     }
+    
 }
