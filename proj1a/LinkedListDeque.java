@@ -16,6 +16,8 @@ public class LinkedListDeque<T> {
 
     public LinkedListDeque() {
         sentinel = new ItemNode(null, null, null);
+        sentinel.prev = sentinel;
+        sentinel.next = sentinel;
         size = 0;
     }
 
@@ -24,28 +26,16 @@ public class LinkedListDeque<T> {
     }
 
     public void addFirst(T item) {
-        if (size != 0) {
-            ItemNode newNode = new ItemNode(item, sentinel.next, sentinel);
-            sentinel.next.prev = newNode;
-            sentinel.next = newNode;
-        } else {
-            ItemNode newNode = new ItemNode(item, sentinel, sentinel);
-            sentinel.next = newNode;
-            sentinel.prev = newNode;
-        }
+        ItemNode newNode = new ItemNode(item, sentinel.next, sentinel);
+        sentinel.next.prev = newNode;
+        sentinel.next = newNode;
         size++;
     }
 
     public void addLast(T item) {
-        if (size != 0) {
-            ItemNode newNode = new ItemNode(item, sentinel, sentinel.prev);
-            sentinel.prev.next = newNode;
-            sentinel.prev = newNode;
-        } else {
-            ItemNode newNode = new ItemNode(item, sentinel, sentinel);
-            sentinel.prev = newNode;
-            sentinel.next = newNode;
-        }
+        ItemNode newNode = new ItemNode(item, sentinel, sentinel.prev);
+        sentinel.prev.next = newNode;
+        sentinel.prev = newNode;
         size++;
     }
 
@@ -61,6 +51,7 @@ public class LinkedListDeque<T> {
             ptr = ptr.next;
             size--;
         }
+        System.out.println();
     }
 
     public T removeFirst() {
@@ -110,5 +101,5 @@ public class LinkedListDeque<T> {
             return recursiveHelper(index - 1, node.next);
         }
     }
-    
+
 }
