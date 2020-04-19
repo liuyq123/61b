@@ -20,11 +20,19 @@ public class ArrayDeque<T> {
     }
 
     public void addFirst(T item) {
-        for (int i = size; i > 0; i--) {
-            items[i] = items[i - 1];
+        if (start != 0 || size == 0) {
+            items[start] = item;
+            size++;
+            if (start != 0) {
+                start--;
+            }
+        } else {
+            T[] a = (T[]) new Object[size + 1];
+            a[0] = item;
+            System.arraycopy(items, 0, a, 1, size);
+            items = a;
+            size++;
         }
-        items[0]= item;
-        size++;
     }
 
     public void printDeque() {
@@ -55,8 +63,10 @@ public class ArrayDeque<T> {
         if (size == 0) {
             return null;
         }
-        T x = get(0);
-        start++;
+        T x = get(start);
+        if (start != 0) {
+            start--;
+        }
         size--;
         return x;
     }
