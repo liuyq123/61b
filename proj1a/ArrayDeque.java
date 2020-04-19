@@ -3,7 +3,7 @@ public class ArrayDeque<Item> {
     private int size;
     private int start;
 
-    public AList() {
+    public ArrayDeque() {
         items = (Item[]) new Object[100];
         size = 0;
         start = 0;
@@ -16,11 +16,7 @@ public class ArrayDeque<Item> {
     }
 
     public boolean isEmpty() {
-        if (size == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return size == 0;
     }
 
     public void printDeque() {
@@ -51,10 +47,10 @@ public class ArrayDeque<Item> {
         if (size == 0) {
             return null;
         }
-
-        start ++;
-
-
+        Item x = get(0);
+        start++;
+        size--;
+        return x;
     }
 
     public Item removeLast() {

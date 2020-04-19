@@ -1,10 +1,10 @@
 public class LinkedListDeque<Item> {
     private class ItemNode {
-        public Item item;
-        public ItemNode next;
-        public ItemNode prev;
+        private Item item;
+        private ItemNode next;
+        private ItemNode prev;
 
-        public ItemNode(Item i, ItemNode n, ItemNode p) {
+        ItemNode(Item i, ItemNode n, ItemNode p) {
             item = i;
             next = n;
             prev = p;
@@ -25,20 +25,16 @@ public class LinkedListDeque<Item> {
 
     public void addFirst(Item item) {
         sentinel.next = new ItemNode(item, null, sentinel);
-        size ++;
+        size++;
     }
 
     public void addLast(Item item) {
         sentinel.prev = new ItemNode(item, sentinel, null);
-        size ++;
+        size++;
     }
 
     public boolean isEmpty() {
-        if (size == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return size == 0;
     }
 
     public void printDeque() {
@@ -53,7 +49,7 @@ public class LinkedListDeque<Item> {
     public Item removeFirst() {
         Item first = sentinel.next.item;
         sentinel.next = sentinel.next.next;
-        size --;
+        size--;
         return first;
     }
 
@@ -61,7 +57,7 @@ public class LinkedListDeque<Item> {
     public Item removeLast() {
         Item last = sentinel.prev.item;
         sentinel.prev = sentinel.prev.prev;
-        size --;
+        size--;
         return last;
     }
 
