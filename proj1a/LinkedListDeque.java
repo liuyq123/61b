@@ -24,12 +24,28 @@ public class LinkedListDeque<T> {
     }
 
     public void addFirst(T item) {
-        sentinel.next = new ItemNode(item, null, sentinel);
+        if (size != 0) {
+            ItemNode newNode = new ItemNode(item, sentinel.next, sentinel);
+            sentinel.next.prev = newNode;
+            sentinel.next = newNode;
+        } else {
+            ItemNode newNode = new ItemNode(item, sentinel, sentinel);
+            sentinel.next = newNode;
+            sentinel.prev = newNode;
+        }
         size++;
     }
 
     public void addLast(T item) {
-        sentinel.prev = new ItemNode(item, sentinel, null);
+        if (size != 0) {
+            ItemNode newNode = new ItemNode(item, sentinel, sentinel.prev);
+            sentinel.prev.next = newNode;
+            sentinel.prev = newNode;
+        } else {
+            ItemNode newNode = new ItemNode(item, sentinel, sentinel);
+            sentinel.prev = newNode;
+            sentinel.next = newNode;
+        }
         size++;
     }
 
@@ -39,10 +55,11 @@ public class LinkedListDeque<T> {
 
     public void printDeque() {
         ItemNode ptr = sentinel;
-        while (ptr.next != null) {
+        while (size != 0) {
             System.out.print(ptr.next.item);
             System.out.print(" ");
             ptr = ptr.next;
+            size--;
         }
     }
 
