@@ -67,6 +67,11 @@ public class ArrayDeque<T> {
         T x = get(0);
         start++;
         size--;
+
+        if (size / items.length < 0.25) {
+            resize( 2 * size);
+        }
+
         return x;
     }
 
@@ -77,8 +82,13 @@ public class ArrayDeque<T> {
         T x = get(start + size - 1);
         items[start + size - 1] = null;
         size = size - 1;
+
+        if (size / items.length < 0.25) {
+            resize( 2 * size);
+        }
+
         return x;
     }
 
-   
+
 }
