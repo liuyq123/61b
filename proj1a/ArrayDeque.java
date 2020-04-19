@@ -43,11 +43,11 @@ public class ArrayDeque<T> {
     }
 
     public void addLast(T x) {
-        if (size == items.length) {
+        if (size + start == items.length) {
             resize(size * 2);
         }
 
-        items[size] = x;
+        items[start + size] = x;
         size = size + 1;
     }
 
@@ -63,10 +63,8 @@ public class ArrayDeque<T> {
         if (size == 0) {
             return null;
         }
-        T x = get(start);
-        if (start != 0) {
-            start--;
-        }
+        T x = get(0);
+        start++;
         size--;
         return x;
     }
@@ -75,7 +73,7 @@ public class ArrayDeque<T> {
         if (size == 0) {
             return null;
         }
-        T x = get(size - 1);
+        T x = get(start + size - 1);
         items[start + size - 1] = null;
         size = size - 1;
         return x;
