@@ -13,6 +13,7 @@ public class ArrayDeque<T> {
         T[] a = (T[]) new Object[capacity];
         System.arraycopy(items, start, a, 0, size);
         items = a;
+        start = 0;
     }
 
     public boolean isEmpty() {
@@ -21,7 +22,7 @@ public class ArrayDeque<T> {
 
     public void addFirst(T item) {
         if (start != 0 || size == 0) {
-            items[start] = item;
+            items[start - 1] = item;
             size++;
             if (start != 0) {
                 start--;
@@ -78,5 +79,6 @@ public class ArrayDeque<T> {
         size = size - 1;
         return x;
     }
-    
+
+   
 }
