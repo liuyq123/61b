@@ -11,12 +11,25 @@ public class ArrayDeque<Item> {
 
     private void resize(int capacity) {
         Item[] a = (Item[]) new Object[capacity];
-        System.arraycopy(items, 0, a, 0, size);
+        System.arraycopy(items, start, a, 0, size);
         items = a;
     }
 
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    public void addFirst(Item item) {
+        if (start != 0) {
+            items[start] = item;
+            start--;
+        } else {
+            addLast(items[size - 1]);
+            for (int i = size - 2; i >= 0; i--) {
+                items[i + 1] = items[i];
+            }
+            items[0] = item;
+        }
     }
 
     public void printDeque() {

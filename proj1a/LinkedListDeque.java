@@ -73,4 +73,11 @@ public class LinkedListDeque<Item> {
 
         return ptr.item;
     }
+
+    public Item getRecursive(int index) {
+        if (index == 0) {
+            return sentinel.next.item;
+        }
+        getRecursive(index - 1);
+    }
 }
