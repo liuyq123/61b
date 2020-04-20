@@ -90,13 +90,5 @@ public class ArrayDeque<T> {
 
         return x;
     }
-
-    public static void main(String[] args) {
-        ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
-        ArrayDeque.addLast(0);
-        ArrayDeque.addLast(1);
-        ArrayDeque.addLast(2);
-        ArrayDeque.isEmpty();
-        System.out.print(ArrayDeque.removeLast());
-    }
+    
 }
