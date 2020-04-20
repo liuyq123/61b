@@ -30,7 +30,7 @@ public class ArrayDeque<T> {
 
     public void addFirst(T item) {
         if (size == items.length - 2) {
-            resize(size * 2);
+            resize(items.length * 2);
         }
         items[nextFirst] = item;
         nextFirst = (nextFirst + items.length - 1) % items.length;
@@ -47,7 +47,7 @@ public class ArrayDeque<T> {
 
     public void addLast(T item) {
         if (size == items.length - 2) {
-            resize(size * 2);
+            resize(items.length * 2);
         }
         items[nextLast] = item;
         nextLast = (nextLast + 1) % items.length;
@@ -75,7 +75,7 @@ public class ArrayDeque<T> {
 
         size--;
 
-        if (size / items.length < 0.25) {
+        if (size / items.length < 0.25 && size != 0) {
             resize(items.length / 2);
         }
 
@@ -90,12 +90,12 @@ public class ArrayDeque<T> {
         nextLast = (nextLast + items.length - 1) % items.length;
 
         size--;
-        if (size / items.length < 0.25) {
+        if (size / items.length < 0.25 && size != 0) {
             resize(items.length / 2);
         }
 
         return x;
     }
 
-    
+  
 }
