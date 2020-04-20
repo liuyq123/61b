@@ -17,11 +17,11 @@ public class ArrayDeque<T> {
     }
 
     public boolean isEmpty() {
-        return size == 0;
+        return (size - start) == 0;
     }
 
     public void addFirst(T item) {
-        if (start != 0 || size == 0) {
+        if (start != 0) {
             items[start - 1] = item;
             size++;
             if (start != 0) {
@@ -89,15 +89,9 @@ public class ArrayDeque<T> {
         return x;
     }
 
-    public static void main(String[] args) {
+    /** public static void main(String[] args) {
         ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
-        ArrayDeque.addLast(0);
-        ArrayDeque.size();
-        ArrayDeque.removeLast();
-        ArrayDeque.addLast(3);
-        ArrayDeque.removeFirst();
-        ArrayDeque.size();
-        ArrayDeque.addFirst(6);
-        System.out.print(ArrayDeque.removeLast());
+        ArrayDeque.addFirst(0);
+        System.out.print(ArrayDeque.isEmpty()); */
     }
 }
