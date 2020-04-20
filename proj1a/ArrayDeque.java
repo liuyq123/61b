@@ -92,6 +92,6 @@ public class ArrayDeque<T> {
     /** public static void main(String[] args) {
         ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
         ArrayDeque.addFirst(0);
-        System.out.print(ArrayDeque.isEmpty()); */
-    }
+        System.out.print(ArrayDeque.isEmpty());
+    }*/
 }
