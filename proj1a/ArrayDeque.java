@@ -35,6 +35,9 @@ public class ArrayDeque<T> {
         items[nextFirst] = item;
         nextFirst = (nextFirst + items.length - 1) % items.length;
         size++;
+        if ((float) size / items.length < 0.25 && size != 0) {
+            resize(items.length / 2);
+        }
     }
 
     public void printDeque() {
@@ -52,6 +55,9 @@ public class ArrayDeque<T> {
         items[nextLast] = item;
         nextLast = (nextLast + 1) % items.length;
         size++;
+        if ((float) size / items.length < 0.25 && size != 0) {
+            resize(items.length / 2);
+        }
     }
 
     public T get(int i) {
@@ -75,7 +81,7 @@ public class ArrayDeque<T> {
 
         size--;
 
-        if ((float)size / items.length < 0.25 && size != 0) {
+        if ((float) size / items.length < 0.25 && size != 0) {
             resize(items.length / 2);
         }
 
@@ -90,12 +96,12 @@ public class ArrayDeque<T> {
         nextLast = (nextLast + items.length - 1) % items.length;
 
         size--;
-        if ((float)size / items.length < 0.25 && size != 0) {
+        if ((float) size / items.length < 0.25 && size != 0) {
             resize(items.length / 2);
         }
 
         return x;
     }
 
-    
+
 }
