@@ -73,10 +73,11 @@ public class ArrayDeque<T> {
         T x = get(0);
         nextFirst = (nextFirst + 1) % items.length;
 
+        size--;
+
         if (size / items.length < 0.25 && size != 0) {
             resize( items.length / 2);
         }
-        size--;
 
         return x;
     }
@@ -88,12 +89,13 @@ public class ArrayDeque<T> {
         T x = get(size - 1);
         nextLast = (nextLast + items.length - 1) % items.length;
 
+        size--;
         if (size / items.length < 0.25 && size != 0) {
             resize( items.length / 2);
         }
-        size--;
 
         return x;
     }
-    
+
+
 }
