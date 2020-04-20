@@ -8,7 +8,7 @@ public class ArrayDeque<T> {
         items = (T[]) new Object[100];
         size = 0;
         nextFirst = 0;
-        nextLast = 0;
+        nextLast = 1;
     }
 
     private void resize(int capacity) {
@@ -52,22 +52,22 @@ public class ArrayDeque<T> {
         T x = get(0);
         nextFirst = (nextFirst + 1) % items.length;
 
-
         if (size / items.length < 0.25 && size != 0) {
             resize( items.length / 2);
         }
+        size--;
 
         return x;
     }
 
     public T removeLast() {
         T x = get(size - 1);
-
         nextLast = (nextLast + items.length - 1) % items.length;
 
         if (size / items.length < 0.25 && size != 0) {
             resize( items.length / 2);
         }
+        size--;
 
         return x;
     }
