@@ -68,7 +68,7 @@ public class ArrayDeque<T> {
         start++;
         size--;
 
-        if (size / items.length < 0.25) {
+        if (size / items.length < 0.25 && size != 0) {
             resize( 2 * size);
         }
 
@@ -80,15 +80,24 @@ public class ArrayDeque<T> {
             return null;
         }
         T x = get(start + size - 1);
-        items[start + size - 1] = null;
         size = size - 1;
 
-        if (size / items.length < 0.25) {
+        if (size / items.length < 0.25 && size != 0) {
             resize( 2 * size);
         }
 
         return x;
     }
 
-
+    public static void main(String[] args) {
+        ArrayDeque<Integer> ArrayDeque = new ArrayDeque<>();
+        ArrayDeque.addLast(0);
+        ArrayDeque.size();
+        ArrayDeque.removeLast();
+        ArrayDeque.addLast(3);
+        ArrayDeque.removeFirst();
+        ArrayDeque.size();
+        ArrayDeque.addFirst(6);
+        System.out.print(ArrayDeque.removeLast());
+    }
 }
