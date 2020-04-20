@@ -17,7 +17,7 @@ public class ArrayDeque<T> {
             System.arraycopy(items, nextFirst, a, 0, items.length - nextFirst);
             System.arraycopy(items, 0, a, items.length - nextFirst, size - items.length + nextFirst + 1);
         } else {
-            System.arraycopy(items, nextFirst, a, 0, size);
+            System.arraycopy(items, nextFirst, a, 0, size + 1);
         }
         nextFirst = 0;
         nextLast = size + 1;
@@ -97,5 +97,5 @@ public class ArrayDeque<T> {
         return x;
     }
 
-
+    
 }
