@@ -15,12 +15,12 @@ public class ArrayDeque<T> {
         T[] a = (T[]) new Object[capacity];
         if (nextFirst > nextLast) {
             System.arraycopy(items, nextFirst, a, 0, items.length - nextFirst);
-            System.arraycopy(items, nextFirst, a, items.length - nextFirst, size - items.length + nextFirst);
+            System.arraycopy(items, 0, a, items.length - nextFirst, size - items.length + nextFirst + 1);
         } else {
             System.arraycopy(items, nextFirst, a, 0, size);
         }
         nextFirst = 0;
-        nextLast = size;
+        nextLast = size + 1;
         items = a;
     }
 
