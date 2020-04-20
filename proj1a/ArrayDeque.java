@@ -24,6 +24,7 @@ public class ArrayDeque<T> {
     public void addFirst(T item) {
         items[nextFirst] = item;
         nextFirst = (nextFirst + items.length - 1) % items.length;
+        size++;
     }
 
     public void printDeque() {
@@ -36,6 +37,7 @@ public class ArrayDeque<T> {
     public void addLast(T item) {
         items[nextLast] = item;
         nextLast = (nextLast + 1) % items.length;
+        size++;
     }
 
     public T get(int i) {
@@ -47,7 +49,7 @@ public class ArrayDeque<T> {
     }
 
     public T removeFirst() {
-        T x = get(1);
+        T x = get(0);
         nextFirst = (nextFirst + 1) % items.length;
 
 
@@ -69,4 +71,5 @@ public class ArrayDeque<T> {
 
         return x;
     }
+    
 }
