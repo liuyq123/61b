@@ -70,7 +70,7 @@ public class Percolation {
 
     boolean isOpen(int row, int col) {
         checkBound(row, col);
-        return openStatus[row, col];
+        return openStatus[row][col];
     }
 
     boolean isFull(int row, int col) {
@@ -79,7 +79,7 @@ public class Percolation {
         return ufButTheBottom.connected(pos1D, top);
     }
 
-    public int numberofOpenSites() {
+    public int numberOfOpenSites() {
         return numSites;
     }
 

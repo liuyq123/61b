@@ -23,7 +23,7 @@ public class PercolationStats {
                 int col = StdRandom.uniform(N);
                 percolation.open(row, col);
             }
-            int numOpenSites = percolation.numberofOpenSites();
+            int numOpenSites = percolation.numberOfOpenSites();
             result[i] = numOpenSites;
         }
     }
@@ -40,11 +40,13 @@ public class PercolationStats {
         double mean = mean();
         double sd = stddev();
         double low = mean - 1.96 * sd / Math.sqrt(numTest);
+        return low;
     }
 
     public double confidenceHigh() {
         double mean = mean();
         double sd = stddev();
-        double low = mean + 1.96 * sd / Math.sqrt(numTest);
+        double high = mean + 1.96 * sd / Math.sqrt(numTest);
+        return high;
     }
 }
