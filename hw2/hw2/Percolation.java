@@ -23,16 +23,16 @@ public class Percolation {
         openStatus = new boolean[N][N];
         uf = new WeightedQuickUnionUF(N * N + 2);
         ufButTheBottom = new WeightedQuickUnionUF(N * N + 1);
-        top = -1;
+        top = N * N;
         bottom = N * N + 1;
     }
 
     private int xyTo1D(int row, int col) {
-        return row * size + col + 1;
+        return row * size + col;
     }
 
     private void checkBound(int row, int col) {
-        if (row > size || col > size || row < 0 || col < 0) {
+        if (row > size - 1 || col > size - 1 || row < 0 || col < 0) {
             throw new IndexOutOfBoundsException();
         }
     }
@@ -46,22 +46,32 @@ public class Percolation {
         }
 
         int pos1D = xyTo1D(row, col);
-        if (col > 0) {
+
+        if (row == 0) {
+            uf.union(pos1D, top);
+            ufButTheBottom.union(pos1D, top);
+        }
+
+        if (row == size - 1) {
+            uf.union(pos1D, bottom);
+        }
+
+        if (col > 0 && isOpen(row, col - 1)) {
             int neighborLeft = pos1D - 1;
             uf.union(neighborLeft, pos1D);
             ufButTheBottom.union(neighborLeft, pos1D);
         }
-        if (col < size - 1) {
+        if (col < size - 1 && isOpen(row, col + 1)) {
             int neighborRight = pos1D + 1;
             uf.union(neighborRight, pos1D);
             ufButTheBottom.union(neighborRight, pos1D);
         }
-        if (row > 0) {
+        if (row > 0 && isOpen(row - 1, col)) {
             int neighborUp = pos1D - size;
             uf.union(neighborUp, pos1D);
             ufButTheBottom.union(neighborUp, pos1D);
         }
-        if (row < size - 1) {
+        if (row < size - 1 && isOpen(row + 1, col)) {
             int neighborDown = pos1D + size;
             uf.union(neighborDown, pos1D);
             ufButTheBottom.union(neighborDown, pos1D);
