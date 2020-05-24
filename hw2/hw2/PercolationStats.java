@@ -5,7 +5,7 @@ import edu.princeton.cs.introcs.StdStats;
 public class PercolationStats {
     private int[] result; /* store the number if open sites of each experiment */
     private int totalSites;
-    int numTest;
+    private int numTest;
 
     public PercolationStats(int N, int T, PercolationFactory pf) {
         if (N <= 0 || T <= 0) {

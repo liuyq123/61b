@@ -4,8 +4,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
     private int numSites = 0; /* the number of open sites */
-    int size; /* the length of a size of the square */
-    boolean[][] openStatus;
+    private int size; /* the length of a size of the square */
+    private boolean[][] openStatus;
 
     /* to prevent backwash */
     private WeightedQuickUnionUF uf;
@@ -68,12 +68,12 @@ public class Percolation {
         }
     }
 
-    boolean isOpen(int row, int col) {
+    public boolean isOpen(int row, int col) {
         checkBound(row, col);
         return openStatus[row][col];
     }
 
-    boolean isFull(int row, int col) {
+    public boolean isFull(int row, int col) {
         checkBound(row, col);
         int pos1D = xyTo1D(row, col);
         return ufButTheBottom.connected(pos1D, top);
@@ -87,7 +87,7 @@ public class Percolation {
         return uf.connected(top, bottom);
     }
 
-    public static void main (String[] args) {
+    public static void main(String[] args) {
 
     }
 }
