@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class MyHashMap<K, V> implements Map61B<K, V> {
 
-    private static final int DEFAULT_SIZE = 16;
+    private static final int DEFAULT_SIZE = 2;
     private static final double MAX_LF = 0.75;
 
     private ArrayMap<K, V>[] buckets;
@@ -53,19 +53,37 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        return buckets[hash(key)].get(key);
+    }
+
+    private void resize(int capacity) {
+        ArrayMap<K, V>[] tmp = buckets.clone();
+        buckets = new ArrayMap[capacity];
+        clear();
+        for (ArrayMap<K, V> bucket : tmp) {
+            for (K key : bucket.keySet()) {
+                put(key, bucket.get(key));
+            }
+        }
     }
 
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        int hashedKey = hash(key);
+        if (!buckets[hashedKey].containsKey(key)) {
+            size++;
+        }
+        buckets[hashedKey].put(key, value);
+        if (loadFactor() > MAX_LF) {
+            resize(buckets.length * 2);
+        }
     }
 
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
     }
 
     //////////////// EVERYTHING BELOW THIS LINE IS OPTIONAL ////////////////
@@ -95,5 +113,13 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public Iterator<K> iterator() {
         throw new UnsupportedOperationException();
+    }
+
+    public static void main(String[] args) {
+        MyHashMap<String, Integer> mhMap = new MyHashMap<>();
+        mhMap.put("hello", 5);
+        mhMap.put("cat", 10);
+        mhMap.put("fish", 22);
+        mhMap.put("zebra", 90);
     }
 }
