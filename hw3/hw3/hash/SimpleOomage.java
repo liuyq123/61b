@@ -20,9 +20,8 @@ public class SimpleOomage implements Oomage {
         SimpleOomage other = (SimpleOomage) o;
         if (other.red != this.red || other.green != this.green || other.blue != this.blue) {
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     @Override
