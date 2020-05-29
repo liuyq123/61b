@@ -30,31 +30,30 @@ public class MazeBreadthFirstPaths extends MazeExplorer {
 
     /** Conducts a breadth first search of the maze starting at the source. */
     private void bfs(int v) {
-        marked[v] = true;
-        announce();
-
-        if (v == t) {
-            targetFound = true;
-        }
-
-        if (targetFound) {
-            return;
-        }
-
         Queue<Integer> visited = new ArrayDeque<>();
-        for (int w : maze.adj(v)) {
-            if (!marked[v]) {
-                visited.add(w);
-                edgeTo[w] = v;
-                announce();
-                distTo[w] = distTo[v] + 1;
-                if (targetFound) {
-                    return;
+        visited.add(v);
+
+        while (!visited.isEmpty()) {
+            int v = visited.remove();
+            marked[v] = true;
+            announce();
+
+            if (v == t) {
+                targetFound = true;
+            }
+
+            if (targetFound) {
+                return;
+            }
+
+            for (int w : maze.adj(v)) {
+                if (!marked[v]) {
+                    visited.add(w);
+                    edgeTo[w] = v;
+                    distTo[w] = distTo[v] + 1;
                 }
             }
-            while (!visited.isEmpty()) {
-                bfs(visited.remove());
-            }
+
         }
     }
 
