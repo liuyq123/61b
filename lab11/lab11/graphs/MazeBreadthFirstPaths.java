@@ -43,8 +43,8 @@ public class MazeBreadthFirstPaths extends MazeExplorer {
 
         Queue<Integer> visited = new ArrayDeque<>();
         for (int w : maze.adj(v)) {
-            visited.add(w);
             if (!marked[v]) {
+                visited.add(w);
                 edgeTo[w] = v;
                 announce();
                 distTo[w] = distTo[v] + 1;
