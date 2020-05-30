@@ -90,11 +90,15 @@ public class MergeSort {
             queueOfQueues = mergedQueues;
             mergedQueues = tmp;
         }
-        return queueOfQueues.dequeue();
+        items = queueOfQueues.dequeue();
+        return items;
     }
 
     public static void main (String[] args){
         Queue<Integer> students = new Queue<Integer>();
+        students.enqueue(5);
+        students.enqueue(0);
+        students.enqueue(2);
         System.out.println(mergeSort(students).toString());
     }
 }

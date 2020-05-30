@@ -73,8 +73,8 @@ public class QuickSort {
         if (greater.size() > 1) {
             greater = quickSort(greater);
         }
-        Queue<Item>  catenated = catenate(catenate(less, equal), greater);
-        return catenated;
+        items = catenate(catenate(less, equal), greater);
+        return items;
     }
 
     public static void main (String[] args){
