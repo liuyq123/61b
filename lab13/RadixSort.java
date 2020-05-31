@@ -19,6 +19,10 @@ public class RadixSort {
      * @return String[] the sorted array
      */
     public static String[] sort(String[] asciis) {
+        if (asciis.length == 0) {
+            return asciis;
+        }
+        
         // compute the maximum length of those strings
         int max = asciis[0].length();
         for (int i = 0; i < asciis.length; i++) {
