@@ -28,7 +28,7 @@ public class RadixSort {
         }
 
         String[] toSort = asciis.clone();
-        for (int i = asciis.length - 1; i >= 0; i--) {
+        for (int i = max - 1; i >= 0; i--) {
             sortHelperLSD(toSort, i);
         }
 
@@ -47,10 +47,11 @@ public class RadixSort {
         int[] counts = new int[radix];
 
         for (String s : asciis) {
-            if (s.length() < index - 1) {
+            if (s.length() - 1 < index) {
                 counts[0]++;
+            } else {
+                counts[s.charAt(index)]++;
             }
-            counts[s.charAt(index)]++;
         }
 
         int[] starts = new int[radix];
@@ -60,20 +61,18 @@ public class RadixSort {
             pos += counts[i];
         }
 
-        String[] sorted = new String[asciis.length];
-        for (int i = 0; i < asciis.length; i++) {
-            String item = asciis[i];
-            if (item.length() < index - 1) {
+        String[] tmp = asciis.clone();
+        for (String s : tmp) {
+            if (s.length() - 1 < index) {
                 int place = starts[0];
-                sorted[place] = item;
+                asciis[place] = s;
                 starts[0]++;
             } else {
-                int place = starts[item.charAt(index)];
-                sorted[place] = item;
-                starts[item.charAt(index)]++;
+                int place = starts[s.charAt(index)];
+                asciis[place] = s;
+                starts[s.charAt(index)]++;
             }
         }
-        asciis = sorted;
     }
 
     /**
