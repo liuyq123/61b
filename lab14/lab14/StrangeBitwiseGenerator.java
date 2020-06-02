@@ -1,10 +1,12 @@
 package lab14;
 
-public class StrangeBitwiseGenerator {
+import lab14lib.Generator;
+
+public class StrangeBitwiseGenerator implements Generator {
     private int period;
     private int state;
 
-    public SawToothGenerator(int period) {
+    public StrangeBitwiseGenerator(int period) {
         state = 0;
         this.period = period;
     }
