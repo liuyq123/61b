@@ -1,8 +1,6 @@
 package lab14;
 
-import lab14lib.Generator;
-
-public class SawToothGenerator implements Generator {
+public class StrangeBitwiseGenerator {
     private int period;
     private int state;
 
@@ -14,7 +12,8 @@ public class SawToothGenerator implements Generator {
     @Override
     public double next() {
         state++;
-        return normalize(state % period);
+        int weirdState = state & (state >>> 3) % period;
+        return normalize(weirdState);
     }
 
     private double normalize(int s) {
