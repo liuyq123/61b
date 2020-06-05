@@ -33,12 +33,12 @@ public class SeamCarver {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
-        double deltaXR = picture().get((x + 1) % width(), y).getRed() - picture().get((x - 1 + width()) % width(), y).getRed();
-        double deltaYR = picture().get(x, (y + 1) % height()).getRed() - picture().get(x, (y - 1 + height()) % height()).getRed();
-        double deltaXG = picture().get((x + 1) % width(), y).getGreen() - picture().get((x - 1 + width()) % width(), y).getGreen();
-        double deltaYG = picture().get(x, (y + 1) % height()).getGreen() - picture().get(x, (y - 1 + height()) % height()).getGreen();
-        double deltaXB = picture().get((x + 1) % width(), y).getBlue() - picture().get((x - 1 + width()) % width(), y).getBlue();
-        double deltaYB = picture().get(x, (y + 1) % height()).getBlue() - picture().get(x, (y - 1 + height()) % height()).getBlue();
+        double deltaXR = this.p.get((x + 1) % width(), y).getRed() - this.p.get((x - 1 + width()) % width(), y).getRed();
+        double deltaYR = this.p.get(x, (y + 1) % height()).getRed() - this.p.get(x, (y - 1 + height()) % height()).getRed();
+        double deltaXG = this.p.get((x + 1) % width(), y).getGreen() - this.p.get((x - 1 + width()) % width(), y).getGreen();
+        double deltaYG = this.p.get(x, (y + 1) % height()).getGreen() - this.p.get(x, (y - 1 + height()) % height()).getGreen();
+        double deltaXB = this.p.get((x + 1) % width(), y).getBlue() - this.p.get((x - 1 + width()) % width(), y).getBlue();
+        double deltaYB = this.p.get(x, (y + 1) % height()).getBlue() - this.p.get(x, (y - 1 + height()) % height()).getBlue();
         double xGradient = deltaXR * deltaXR + deltaXG * deltaXG + deltaXB * deltaXB;
         double yGradient = deltaYR * deltaYR + deltaYG * deltaYG + deltaYB * deltaYB;
         return xGradient + yGradient;
