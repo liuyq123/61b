@@ -55,7 +55,7 @@ public class SeamCarver {
         Picture tmp = new Picture(height(), width());
         for (int i = 0; i < width(); i++) {
             for (int j = 0; j < height(); j++) {
-                tmp.set(j, i, picture().get(i, j));
+                tmp.set(j, i, this.p.get(i, j));
             }
         }
 
