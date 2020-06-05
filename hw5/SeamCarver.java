@@ -1,127 +1,283 @@
+
 import edu.princeton.cs.algs4.Picture;
 
-import java.util.LinkedList;
+import java.awt.Color;
 
 public class SeamCarver {
     private Picture picture;
+    private double[][] energyMap;
+
     public SeamCarver(Picture picture) {
         this.picture = new Picture(picture);
+        this.energyMap = new double[picture.width()][picture.height()];
+        populateEnergyMap();
     }
+
+    private void populateEnergyMap() {
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < height(); j++) {
+                energyMap[i][j] = calculateEnergy(i, j);
+            }
+        }
+    }
+
+    /* Returns energy of pixel at (column, row) */
+    private double calculateEnergy(int column, int row) {
+        double xComponentEnergy, yComponentEnergy;
+        int differenceRedX, differenceGreenX, differenceBlueX;
+        int differenceRedY, differenceGreenY, differenceBlueY;
+
+        int[] topNeighbour = neighbour(column, row, Direction.UP);
+        int[] bottomNeighbour = neighbour(column, row, Direction.DOWN);
+        int[] leftNeighbour = neighbour(column, row, Direction.LEFT);
+        int[] rightNeighbour = neighbour(column, row, Direction.RIGHT);
+
+
+        differenceRedX = picture.get(leftNeighbour[0], leftNeighbour[1]).getRed()
+                - picture.get(rightNeighbour[0], rightNeighbour[1]).getRed();
+
+        differenceGreenX = picture.get(leftNeighbour[0], leftNeighbour[1]).getGreen()
+                - picture.get(rightNeighbour[0], rightNeighbour[1]).getGreen();
+
+        differenceBlueX = picture.get(leftNeighbour[0], leftNeighbour[1]).getBlue()
+                - picture.get(rightNeighbour[0], rightNeighbour[1]).getBlue();
+
+        differenceRedX = differenceRedX < 0 ? differenceRedX * -1 : differenceRedX;
+        differenceGreenX = differenceGreenX < 0 ? differenceGreenX * -1 : differenceGreenX;
+        differenceBlueX = differenceBlueX < 0 ? differenceBlueX * -1 : differenceBlueX;
+
+        xComponentEnergy = differenceRedX * differenceRedX + differenceGreenX * differenceGreenX
+                + differenceBlueX * differenceBlueX;
+
+
+        differenceRedY = picture.get(topNeighbour[0], topNeighbour[1]).getRed()
+                - picture.get(bottomNeighbour[0], bottomNeighbour[1]).getRed();
+
+        differenceGreenY = picture.get(topNeighbour[0], topNeighbour[1]).getGreen()
+                - picture.get(bottomNeighbour[0], bottomNeighbour[1]).getGreen();
+
+
+        differenceBlueY = picture.get(topNeighbour[0], topNeighbour[1]).getBlue()
+                - picture.get(bottomNeighbour[0], bottomNeighbour[1]).getBlue();
+
+
+        differenceRedY = differenceRedY < 0 ? differenceRedY * -1 : differenceRedY;
+        differenceGreenY = differenceGreenY < 0 ? differenceGreenY * -1 : differenceGreenY;
+        differenceBlueY = differenceBlueY < 0 ? differenceBlueY * -1 : differenceBlueY;
+
+        yComponentEnergy = differenceRedY * differenceRedY + differenceGreenY * differenceGreenY
+                + differenceBlueY * differenceBlueY;
+
+        return xComponentEnergy + yComponentEnergy;
+    }
+
+    /* Returns int array that represents the neighbouring pixel in the given direction */
+    private int[] neighbour(int column, int row, Direction direction) {
+        int[] neighbour = new int[2];
+
+        switch (direction) {
+
+            case UP:
+                neighbour[0] = column;
+                neighbour[1] = minusOne(row, height());
+                break;
+            case DOWN:
+                neighbour[0] = column;
+                neighbour[1] = plusOne(row, height());
+                break;
+            case LEFT:
+                neighbour[0] = minusOne(column, width());
+                neighbour[1] = row;
+                break;
+            case RIGHT:
+                neighbour[0] = plusOne(column, width());
+                neighbour[1] = row;
+                break;
+            default:
+                throw new IllegalArgumentException("Direction does not exist");
+        }
+        return neighbour;
+    }
+
+    /* Returns the previous index to input */
+    private static int minusOne(int index, int length) {
+        if (index == 0) {
+            return length - 1;
+        }
+
+        return index - 1;
+    }
+
+    private static int plusOne(int index, int length) {
+        if (index == length - 1) {
+            return 0;
+        }
+
+        return index + 1;
+    }
+
+    /* Returns the current picture */
     public Picture picture() {
         return new Picture(picture);
     }
-    public     int width() {
+
+    /* Return the width of the current picture. */
+    public int width() {
         return picture.width();
     }
-    public     int height() {
+
+    /* Return the height of the current picture. */
+    public int height() {
         return picture.height();
     }
+
+    /* Returns energy of pixel at colum x and row y. */
     public double energy(int x, int y) {
-        if (x < 0 || x >= picture.width() || y < 0 || y >= picture.height()) {
-            throw new java.lang.IndexOutOfBoundsException("out of bounds");
-        }
-        double xEnergy, yEnergy;
-        if (picture.width() == 1) {
-            xEnergy = 0;
-        } else if (x == 0) {
-            xEnergy = xEnergyHelper(1, picture.width() - 1, y);
-        } else if (x == picture.width() - 1) {
-            xEnergy = xEnergyHelper(picture.width() - 2, 0, y);
-        } else {
-            xEnergy = xEnergyHelper(x + 1, x - 1, y);
-        }
-        if (picture.height() == 1) {
-            yEnergy = 0;
-        } else if (y == 0) {
-            yEnergy = yEnergyHelper(1, picture.height() - 1, x);
-        } else if (y == picture.height() - 1) {
-            yEnergy = yEnergyHelper(picture.height() - 2, 0, x);
-        } else {
-            yEnergy = yEnergyHelper(y + 1, y - 1, x);
-        }
-        return xEnergy + yEnergy;
-    }
-    private double xEnergyHelper(int x1, int x2, int y) {
-        return  Math.pow(picture.get(x1, y).getRed() - picture.get(x2, y).getRed(), 2)
-                + Math.pow(picture.get(x1, y).getGreen() - picture.get(x2, y).getGreen(), 2)
-                + Math.pow(picture.get(x1, y).getBlue() - picture.get(x2, y).getBlue(), 2);
-    }
-    private double yEnergyHelper(int y1, int y2, int x) {
-        return  Math.pow(picture.get(x, y1).getRed() - picture.get(x, y2).getRed(), 2)
-                + Math.pow(picture.get(x, y1).getGreen() - picture.get(x, y2).getGreen(), 2)
-                + Math.pow(picture.get(x, y1).getBlue() - picture.get(x, y2).getBlue(), 2);
-    }
-    public int[] findHorizontalSeam() {
-        Picture transposePicture = new Picture(this.picture.height(), this.picture.width());
-        for (int x = 0; x < this.picture.width(); x++) {
-            for (int y = 0; y < this.picture.height(); y++) {
-                transposePicture.set(y, x, this.picture.get(x, y));
-            }
-        }
-        SeamCarver transposeSearCarver = new SeamCarver(transposePicture);
-        return transposeSearCarver.findVerticalSeam();
+        return energyMap[x][y];
     }
 
-    public int[] findVerticalSeam() {
-        LinkedList<Integer>[] preAllSeam = new LinkedList[picture.width()];
-        LinkedList<Integer>[] allSeam = new LinkedList[picture.width()];
-        for (int i = 0; i < picture.width(); i++) {
-            preAllSeam[i] = new LinkedList<>();
-        }
-        double[] preEnergy = new double[picture.width()];
-        double[] totalEnergy = new double[picture.width()];
-        int minPreIndex;
-        int minTotalIndex = 0;
-        int[] seam = new int[picture.height()];
-        for (int x = 0; x < picture.width(); x++) {
-            preEnergy[x] = energy(x, 0);
-            totalEnergy[x] = energy(x, 0);
-            preAllSeam[x].add(x);
-        }
-        for (int y = 1; y < picture.height(); y++) {
-            for (int x = 0; x < picture.width(); x++) {
-                allSeam[x] = new LinkedList<>();
-                minPreIndex = minPreEnergyIndex(x, preEnergy);
-                totalEnergy[x] = energy(x, y) + preEnergy[minPreIndex];
-                allSeam[x].addAll(preAllSeam[minPreIndex]);
-                allSeam[x].add(x);
+    /* Return sequence of indices for horizontal seam. */
+    public int[] findHorizontalSeam() {
+        Picture rotatedImage = new Picture(height(), width());
+
+        for (int i = 0; i < rotatedImage.width(); i++) {
+            for (int j = 0; j < rotatedImage.height(); j++) {
+                Color color = picture.get(rotatedImage.height() - 1 - j, i);
+                rotatedImage.set(i, j, color);
             }
-            for (int x = 0; x < picture.width(); x++) {
-                preAllSeam[x] = new LinkedList<>();
-                preAllSeam[x].addAll(allSeam[x]);
-            }
-            System.arraycopy(totalEnergy, 0, preEnergy, 0, picture.width());
         }
-        for (int x = 0; x < picture.width(); x++) {
-            minTotalIndex = totalEnergy[minTotalIndex] < totalEnergy[x] ? minTotalIndex : x;
-        }
-        for (int i = 0; i < seam.length; i++) {
-            seam[i] = allSeam[minTotalIndex].removeFirst();
-        }
+
+        SeamCarver horizontalCarver = new SeamCarver(rotatedImage);
+        int[] seam = horizontalCarver.findVerticalSeam();
+
+        reverseIntArray(seam);
         return seam;
     }
-    private int minPreEnergyIndex(int x, double[] preEnergy) {
-        if (x == 0) {
-            return preEnergy[0] < preEnergy[1] ? 0 : 1;
-        } else if (x == picture.width() - 1) {
-            return preEnergy[picture.width() - 1] < preEnergy[picture.width() - 2]
-                    ? picture.width() - 1 : picture.width() - 2;
-        } else {
-            return threeMinIndex(x - 1, x, x + 1, preEnergy);
+
+    private void reverseIntArray(int[] array) {
+        int left = 0;
+        int right = array.length - 1;
+
+        while (left < right) {
+            int temp = array[left];
+            array[left] = array[right];
+            array[right] = temp;
+            left++;
+            right--;
         }
     }
-    private int threeMinIndex(int a, int b, int c, double[] preEnergy) {
-        int minIndex;
-        minIndex = preEnergy[a] < preEnergy[b] ? a : b;
-        minIndex = preEnergy[minIndex] < preEnergy[c] ? minIndex : c;
-        return minIndex;
+
+    /* Return sequence of indices for vertical seam. */
+    public int[] findVerticalSeam() {
+        int[] verticalSeam = new int[height()];
+        double[][] minimumCostMatrix = getMinimumCostMatrix();
+
+        int colOfEndMinimumCostPath = 0;
+        for (int i = 0; i < width(); i++) {
+            if (minimumCostMatrix[i][height() - 1]
+                    < minimumCostMatrix[colOfEndMinimumCostPath][height() - 1]) {
+                colOfEndMinimumCostPath = i;
+            }
+        }
+
+        int column = colOfEndMinimumCostPath;
+        int row = height() - 1;
+        verticalSeam[row] = colOfEndMinimumCostPath;
+        while (row > 0) {
+            verticalSeam[row - 1] = getSeamPredecessor(minimumCostMatrix, column, row);
+            row--;
+            column = verticalSeam[row];
+        }
+
+        return verticalSeam;
     }
 
+    /* Returns matrix of minimum cost path ending at pixel (i,j) */
+    private double[][] getMinimumCostMatrix() {
+        double[][] minimumPathCost = new double[width()][height()];
+        for (int j = 0; j < height(); j++) {
+            for (int i = 0; i < width(); i++) {
+                if (j == 0) {
+                    minimumPathCost[i][j] = energyMap[i][j];
+                } else if (i == 0) {
+                    minimumPathCost[i][j] = Math.min(
+                            minimumPathCost[i][j - 1],
+                            minimumPathCost[plusOne(i, width())][j - 1])
+                            + energyMap[i][j];
+
+                } else if (i == width() - 1) {
+                    minimumPathCost[i][j] = Math.min(
+                            minimumPathCost[minusOne(i, width())][j - 1],
+                            minimumPathCost[i][j - 1])
+                            + energyMap[i][j];
+                } else {
+                    minimumPathCost[i][j] = Math.min(
+                            Math.min(minimumPathCost[i - 1][j - 1], minimumPathCost[i][j - 1]),
+                            minimumPathCost[i + 1][j - 1])
+                            + energyMap[i][j];
+                }
+            }
+        }
+        return minimumPathCost;
+    }
+
+    /* Returns the column of the preceding pixel in the seam */
+    private int getSeamPredecessor(double[][] minimumCostMatrix, int column, int row) {
+        if (column == 0) {
+            if (column == width() - 1) {
+                return column;
+            }
+            if (minimumCostMatrix[column][row - 1] < minimumCostMatrix[column + 1][row - 1]) {
+                return column;
+            }
+            return column + 1;
+
+        } else if (column == width() - 1) {
+            if (minimumCostMatrix[column - 1][row - 1] < minimumCostMatrix[column][row - 1]) {
+                return column - 1;
+            }
+            return column;
+        } else {
+            double minCost = Math.min(
+                    Math.min(minimumCostMatrix[column - 1][row - 1],
+                            minimumCostMatrix[column + 1][row - 1]),
+                    minimumCostMatrix[column][row - 1]);
+
+            for (int i = -1; i <= 1; i++) {
+                if (minCost == minimumCostMatrix[column + i] [row - 1]) {
+                    return column + i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    /* Remove horizontal seam from picture. */
     public void removeHorizontalSeam(int[] seam) {
-        SeamRemover.removeHorizontalSeam(picture, seam);
-    }
-    public void removeVerticalSeam(int[] seam) {
-        SeamRemover.removeVerticalSeam(picture, seam);
+        for (int index : seam) {
+            if (index < 0 || index >= height()) {
+                throw new IllegalArgumentException("Invalid index in seam");
+            }
+        }
+
+        this.picture = SeamRemover.removeHorizontalSeam(picture, seam);
+        populateEnergyMap();
     }
 
+    /* Remove vertical seam from picture. */
+    public void removeVerticalSeam(int[] seam) {
+        for (int index : seam) {
+            if (index < 0 || index >= width()) {
+                throw new IllegalArgumentException("Invalid index in seam");
+            }
+        }
+
+        this.picture = SeamRemover.removeVerticalSeam(picture, seam);
+        populateEnergyMap();
+    }
+
+    private enum Direction {
+        UP, DOWN, LEFT, RIGHT;
+    }
 }
