@@ -1,208 +1,166 @@
 import edu.princeton.cs.algs4.Picture;
-import java.awt.Color;
 
 public class SeamCarver {
-    private Picture picture;
+    private Picture p;
     private int width;
     private int height;
 
-
     public SeamCarver(Picture picture) {
-        this.picture = new Picture(picture);
-        height = picture.height();
-        width = picture.width();
-
+        this.p = new Picture(picture);
+        this.width = p.width();
+        this.height = p.height();
     }
 
-    // current picture
-    public Picture picture()  {
-        return new Picture(this.picture);
+    public Picture picture() {
+        return new Picture(this.p);
     }
 
-    // width of current picture
     public int width() {
-        return width;
+        return this.width;
     }
 
-    // height of current picture
     public int height() {
-        return height;
+        return this.height;
     }
 
-    private double calculateEnergiesX(int x, int y) {
-        int leftX = changeX(x, -1);
-        int rightX = changeX(x, 1);
-
-        Color left = picture.get(leftX, y);
-        Color right = picture.get(rightX, y);
-
-        double rx = Math.abs(left.getRed() - right.getRed());
-        double bx = Math.abs(left.getBlue() - right.getBlue());
-        double gx = Math.abs(left.getGreen() - right.getGreen());
-
-        return (rx * rx) + (bx * bx) + (gx * gx);
-
-    }
-
-    private double calculateEnergiesY(int x, int y) {
-        int upperY = changeY(y, -1);
-        int lowerY = changeY(y, 1);
-
-        Color up = picture.get(x, upperY);
-        Color down = picture.get(x, lowerY);
-
-        double ry = Math.abs(up.getRed() - down.getRed());
-        double by = Math.abs(up.getBlue() - down.getBlue());
-        double gy = Math.abs(up.getGreen() - down.getGreen());
-
-        return (ry * ry) + (by * by) + (gy * gy);
-    }
-
-
-
-    private int changeX(int x, int diff) {
-        if (x + diff == width) {
-            return 0;
-        } else if (x + diff < 0) {
-            return width - 1;
-        }
-
-        return x + diff;
-    }
-
-    private int changeY(int y, int diff) {
-        if (y + diff == height) {
-            return 0;
-        } else if (y + diff < 0) {
-            return height - 1;
-        }
-
-        return y + diff;
-    }
-
-
-    // energy of pixel at column x and row y
+    // x: column, y: row
     public double energy(int x, int y) {
-        if (x < 0 || x >= width) {
+        if (x < 0 || x >= width()) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
-        if (y < 0 || y >= height) {
+        if (y < 0 || y >= height()) {
             throw new java.lang.IndexOutOfBoundsException();
         }
 
-        return calculateEnergiesX(x, y) + calculateEnergiesY(x, y);
+        double deltaXR = this.p.get((x + 1) % width(), y).getRed() - this.p.get((x - 1 + width()) % width(), y).getRed();
+        double deltaYR = this.p.get(x, (y + 1) % height()).getRed() - this.p.get(x, (y - 1 + height()) % height()).getRed();
+        double deltaXG = this.p.get((x + 1) % width(), y).getGreen() - this.p.get((x - 1 + width()) % width(), y).getGreen();
+        double deltaYG = this.p.get(x, (y + 1) % height()).getGreen() - this.p.get(x, (y - 1 + height()) % height()).getGreen();
+        double deltaXB = this.p.get((x + 1) % width(), y).getBlue() - this.p.get((x - 1 + width()) % width(), y).getBlue();
+        double deltaYB = this.p.get(x, (y + 1) % height()).getBlue() - this.p.get(x, (y - 1 + height()) % height()).getBlue();
+        double xGradient = deltaXR * deltaXR + deltaXG * deltaXG + deltaXB * deltaXB;
+        double yGradient = deltaYR * deltaYR + deltaYG * deltaYG + deltaYB * deltaYB;
+        return xGradient + yGradient;
     }
 
-    // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
         transpose();
-        int[] seam = findVerticalSeam();
+        int[] ret = findVerticalSeam();
         transpose();
-        return seam;
+        return ret;
     }
 
     private void transpose() {
-        Picture temp = new Picture(height, width);
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                temp.set(row, col, picture.get(col, row));
+        Picture tmp = new Picture(height(), width());
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < height(); j++) {
+                tmp.set(j, i, this.p.get(i, j));
             }
         }
 
-        picture = temp;
-        int t = width;
-        width = height;
-        height = t;
+        this.p = tmp;
+        int t = width();
+        this.width = height();
+        this.height = t;
     }
 
-    // sequence of indices for vertical seam
+
     public int[] findVerticalSeam() {
-        int[] seam = new int[height];
-        double totalEnergy = Double.MAX_VALUE;
+        int[] result = new int[height()];
+        double[][] minCost = new double[width()][height()];
 
-        for (int col = 0; col < width; col++) {
-            int y = 0;
-            int x = col;
-            int[] temp = new int[height];
-            double tempEnergy = energy(x, y);
-            temp[y] = x;
-            y++;
+        // compute minCost for each element
+        for (int i = 0; i < width(); i++) {
+            minCost[i][0] = energy(i, 0);
+        }
 
-            double topE = 0.0, leftE = 0.0, rightE = 0.0;
-
-
-            while (y < height) {
-                int top = x;
-                int left = x - 1;
-                int right = x + 1;
-
-                topE = energy(top, y);
-                if (left >= 0) {
-                    leftE = energy(left, y);
+        for (int j = 1; j < height(); j++) {
+            for (int i = 0; i < width(); i++) {
+                if (i == 0) {
+                    minCost[i][j] = energy(i, j) + Math.min(minCost[i][j - 1], minCost[i + 1][j - 1]);
+                } else if (i == width() - 1) {
+                    minCost[i][j] = energy(i, j) + Math.min(minCost[i - 1][j - 1], minCost[i][j - 1]);
                 } else {
-                    leftE = Double.MAX_VALUE;
+                    double smallest = Math.min(Math.min(minCost[i][j - 1], minCost[i - 1][j - 1]),  minCost[i + 1][j - 1]);
+                    minCost[i][j] = energy(i, j) + smallest;
+                    if (minCost[i - 1][j - 1] == smallest) {
+                        result[j - 1] = i - 1;
+                    } else if (minCost[i][j - 1] == smallest) {
+                        result[j - 1] = i;
+                    } else {
+                        result[j - 1] = i + 1;
+                    }
                 }
-
-                if (right < width) {
-                    rightE = energy(right, y);
-                } else {
-                    rightE = Double.MAX_VALUE;
-                }
-
-                if (topE <= leftE && topE <= rightE) {
-                    tempEnergy += topE;
-                    temp[y] = top;
-                    x = top;
-                } else if (leftE <= topE && leftE <= rightE) {
-                    tempEnergy += leftE;
-                    temp[y] = left;
-                    x = left;
-                } else {
-                    tempEnergy += rightE;
-                    temp[y] = right;
-                    x = right;
-                }
-
-                y++;
-            }
-
-            if (tempEnergy <= totalEnergy) {
-                totalEnergy = tempEnergy;
-                seam = temp;
             }
         }
 
-        return seam;
+        double min = minCost[0][height() - 1];
+        int minIndex = 0;
+        for (int i = 0; i < width(); i++) {
+            if (min > minCost[i][height() - 1]) {
+                min = minCost[i][height() - 1];
+                minIndex = i;
+            }
+        }
+        result[height() - 1] = minIndex;
+
+        int i = minIndex;
+        for (int j = height() - 1; j > 0; j--) {
+            if (i == 0) {
+                if (minCost[i][j - 1] < minCost[i + 1][j - 1]) {
+                    result[j - 1] = i;
+                } else {
+                    result[j - 1] = i + 1;
+                }
+            } else if (i == width() - 1) {
+                if (minCost[i][j - 1] < minCost[i - 1][j - 1]) {
+                    result[j - 1] = i;
+                } else {
+                    result[j - 1] = i - 1;
+                }
+            } else {
+                double smallest = Math.min(Math.min(minCost[i][j - 1], minCost[i - 1][j - 1]),  minCost[i + 1][j - 1]);
+                if (minCost[i - 1][j - 1] == smallest) {
+                    result[j - 1] = i - 1;
+                } else if (minCost[i][j - 1] == smallest) {
+                    result[j - 1] = i;
+                } else {
+                    result[j - 1] = i + 1;
+                }
+            }
+            i = result[j - 1];
+        }
+
+        return result;
     }
 
-    // remove horizontal seam from picture
     public void removeHorizontalSeam(int[] seam) {
-        if (checkSeam(seam)) {
-            this.picture = new Picture(SeamRemover.removeHorizontalSeam(this.picture, seam));
-            height--;
+        if (validateSeam(seam)) {
+            SeamRemover rm = new SeamRemover();
+            this.p = rm.removeHorizontalSeam(p, seam);
+            this.height--;
         } else {
             throw new IllegalArgumentException();
         }
     }
 
-    // remove vertical seam from picture
     public void removeVerticalSeam(int[] seam) {
-        if (checkSeam(seam)) {
-            this.picture = new Picture(SeamRemover.removeVerticalSeam(this.picture, seam));
-            width--;
+        if (validateSeam(seam)) {
+            SeamRemover rm = new SeamRemover();
+            this.p = rm.removeVerticalSeam(p, seam);
+            this.width--;
         } else {
             throw new IllegalArgumentException();
         }
     }
 
-    private boolean checkSeam(int[] seam) {
+    private boolean validateSeam(int[] seam) {
         for (int i = 0; i < seam.length - 1; i++) {
-            if (Math.abs(seam[i] - seam[i + 1]) > 1) {
+            if (Math.abs(seam[1] - seam[i + 1]) > 1) {
                 return false;
             }
         }
-
         return true;
     }
 }
