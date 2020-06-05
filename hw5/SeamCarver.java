@@ -6,7 +6,7 @@ public class SeamCarver {
     private int height;
 
     public SeamCarver(Picture picture) {
-        this.p = picture;
+        this.p = new Picture(picture);
         this.width = p.width();
         this.height = p.height();
     }
