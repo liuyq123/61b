@@ -12,7 +12,7 @@ public class SeamCarver {
     }
 
     public Picture picture() {
-        return this.p;
+        return new Picture(this.p);
     }
 
     public int width() {
@@ -75,7 +75,7 @@ public class SeamCarver {
             minCost[i][0] = energy(i, 0);
         }
 
-        for (int j = 1; j < height(); j++){
+        for (int j = 1; j < height(); j++) {
             for (int i = 0; i < width(); i++) {
                 if (i == 0) {
                     minCost[i][j] = energy(i, j) + Math.min(minCost[i][j - 1], minCost[i + 1][j - 1]);
