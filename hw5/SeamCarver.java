@@ -67,72 +67,62 @@ public class SeamCarver {
 
 
     public int[] findVerticalSeam() {
-        int[] result = new int[height()];
-        double[][] minCost = new double[width()][height()];
+        int[] seam = new int[height];
+        double totalEnergy = Double.MAX_VALUE;
 
-        // compute minCost for each element
-        for (int i = 0; i < width(); i++) {
-            minCost[i][0] = energy(i, 0);
-        }
+        for (int col = 0; col < width; col++) {
+            int y = 0;
+            int x = col;
+            int[] temp = new int[height];
+            double tempEnergy = energy(x, y);
+            temp[y] = x;
+            y++;
 
-        for (int j = 1; j < height(); j++) {
-            for (int i = 0; i < width(); i++) {
-                if (i == 0) {
-                    minCost[i][j] = energy(i, j) + Math.min(minCost[i][j - 1], minCost[i + 1][j - 1]);
-                } else if (i == width() - 1) {
-                    minCost[i][j] = energy(i, j) + Math.min(minCost[i - 1][j - 1], minCost[i][j - 1]);
+            double topE = 0.0, leftE = 0.0, rightE = 0.0;
+
+
+            while (y < height) {
+                int top = x;
+                int left = x - 1;
+                int right = x + 1;
+
+                topE = energy(top, y);
+                if (left >= 0) {
+                    leftE = energy(left, y);
                 } else {
-                    double smallest = Math.min(Math.min(minCost[i][j - 1], minCost[i - 1][j - 1]),  minCost[i + 1][j - 1]);
-                    minCost[i][j] = energy(i, j) + smallest;
-                    if (minCost[i - 1][j - 1] == smallest) {
-                        result[j - 1] = i - 1;
-                    } else if (minCost[i][j - 1] == smallest) {
-                        result[j - 1] = i;
-                    } else {
-                        result[j - 1] = i + 1;
-                    }
+                    leftE = Double.MAX_VALUE;
                 }
+
+                if (right < width) {
+                    rightE = energy(right, y);
+                } else {
+                    rightE = Double.MAX_VALUE;
+                }
+
+                if (topE <= leftE && topE <= rightE) {
+                    tempEnergy += topE;
+                    temp[y] = top;
+                    x = top;
+                } else if (leftE <= topE && leftE <= rightE) {
+                    tempEnergy += leftE;
+                    temp[y] = left;
+                    x = left;
+                } else {
+                    tempEnergy += rightE;
+                    temp[y] = right;
+                    x = right;
+                }
+
+                y++;
+            }
+
+            if (tempEnergy <= totalEnergy) {
+                totalEnergy = tempEnergy;
+                seam = temp;
             }
         }
 
-        double min = minCost[0][height() - 1];
-        int minIndex = 0;
-        for (int i = 0; i < width(); i++) {
-            if (min > minCost[i][height() - 1]) {
-                min = minCost[i][height() - 1];
-                minIndex = i;
-            }
-        }
-        result[height() - 1] = minIndex;
-
-        int i = minIndex;
-        for (int j = height() - 1; j > 0; j--) {
-            if (i == 0) {
-                if (minCost[i][j - 1] < minCost[i + 1][j - 1]) {
-                    result[j - 1] = i;
-                } else {
-                    result[j - 1] = i + 1;
-                }
-            } else if (i == width() - 1) {
-                if (minCost[i][j - 1] < minCost[i - 1][j - 1]) {
-                    result[j - 1] = i;
-                } else {
-                    result[j - 1] = i - 1;
-                }
-            } else {
-                double smallest = Math.min(Math.min(minCost[i][j - 1], minCost[i - 1][j - 1]),  minCost[i + 1][j - 1]);
-                if (minCost[i - 1][j - 1] == smallest) {
-                    result[j - 1] = i - 1;
-                } else if (minCost[i][j - 1] == smallest) {
-                    result[j - 1] = i;
-                } else {
-                    result[j - 1] = i + 1;
-                }
-            }
-            i = result[j - 1];
-        }
-
-        return result;
+        return seam;
     }
 
     public void removeHorizontalSeam(int[] seam) {
