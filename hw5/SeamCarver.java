@@ -1,166 +1,127 @@
 import edu.princeton.cs.algs4.Picture;
 
+import java.util.LinkedList;
+
 public class SeamCarver {
-    private Picture p;
-    private int width;
-    private int height;
-
+    private Picture picture;
     public SeamCarver(Picture picture) {
-        this.p = new Picture(picture);
-        this.width = p.width();
-        this.height = p.height();
+        this.picture = new Picture(picture);
     }
-
     public Picture picture() {
-        return new Picture(this.p);
+        return new Picture(picture);
     }
-
-    public int width() {
-        return this.width;
+    public     int width() {
+        return picture.width();
     }
-
-    public int height() {
-        return this.height;
+    public     int height() {
+        return picture.height();
     }
-
-    // x: column, y: row
     public double energy(int x, int y) {
-        if (x < 0 || x >= width()) {
-            throw new java.lang.IndexOutOfBoundsException();
+        if (x < 0 || x >= picture.width() || y < 0 || y >= picture.height()) {
+            throw new java.lang.IndexOutOfBoundsException("out of bounds");
         }
-
-        if (y < 0 || y >= height()) {
-            throw new java.lang.IndexOutOfBoundsException();
+        double xEnergy, yEnergy;
+        if (picture.width() == 1) {
+            xEnergy = 0;
+        } else if (x == 0) {
+            xEnergy = xEnergyHelper(1, picture.width() - 1, y);
+        } else if (x == picture.width() - 1) {
+            xEnergy = xEnergyHelper(picture.width() - 2, 0, y);
+        } else {
+            xEnergy = xEnergyHelper(x + 1, x - 1, y);
         }
-
-        double deltaXR = this.p.get((x + 1) % width(), y).getRed() - this.p.get((x - 1 + width()) % width(), y).getRed();
-        double deltaYR = this.p.get(x, (y + 1) % height()).getRed() - this.p.get(x, (y - 1 + height()) % height()).getRed();
-        double deltaXG = this.p.get((x + 1) % width(), y).getGreen() - this.p.get((x - 1 + width()) % width(), y).getGreen();
-        double deltaYG = this.p.get(x, (y + 1) % height()).getGreen() - this.p.get(x, (y - 1 + height()) % height()).getGreen();
-        double deltaXB = this.p.get((x + 1) % width(), y).getBlue() - this.p.get((x - 1 + width()) % width(), y).getBlue();
-        double deltaYB = this.p.get(x, (y + 1) % height()).getBlue() - this.p.get(x, (y - 1 + height()) % height()).getBlue();
-        double xGradient = deltaXR * deltaXR + deltaXG * deltaXG + deltaXB * deltaXB;
-        double yGradient = deltaYR * deltaYR + deltaYG * deltaYG + deltaYB * deltaYB;
-        return xGradient + yGradient;
+        if (picture.height() == 1) {
+            yEnergy = 0;
+        } else if (y == 0) {
+            yEnergy = yEnergyHelper(1, picture.height() - 1, x);
+        } else if (y == picture.height() - 1) {
+            yEnergy = yEnergyHelper(picture.height() - 2, 0, x);
+        } else {
+            yEnergy = yEnergyHelper(y + 1, y - 1, x);
+        }
+        return xEnergy + yEnergy;
     }
-
+    private double xEnergyHelper(int x1, int x2, int y) {
+        return  Math.pow(picture.get(x1, y).getRed() - picture.get(x2, y).getRed(), 2)
+                + Math.pow(picture.get(x1, y).getGreen() - picture.get(x2, y).getGreen(), 2)
+                + Math.pow(picture.get(x1, y).getBlue() - picture.get(x2, y).getBlue(), 2);
+    }
+    private double yEnergyHelper(int y1, int y2, int x) {
+        return  Math.pow(picture.get(x, y1).getRed() - picture.get(x, y2).getRed(), 2)
+                + Math.pow(picture.get(x, y1).getGreen() - picture.get(x, y2).getGreen(), 2)
+                + Math.pow(picture.get(x, y1).getBlue() - picture.get(x, y2).getBlue(), 2);
+    }
     public int[] findHorizontalSeam() {
-        transpose();
-        int[] ret = findVerticalSeam();
-        transpose();
-        return ret;
-    }
-
-    private void transpose() {
-        Picture tmp = new Picture(height(), width());
-        for (int i = 0; i < width(); i++) {
-            for (int j = 0; j < height(); j++) {
-                tmp.set(j, i, this.p.get(i, j));
+        Picture transposePicture = new Picture(this.picture.height(), this.picture.width());
+        for (int x = 0; x < this.picture.width(); x++) {
+            for (int y = 0; y < this.picture.height(); y++) {
+                transposePicture.set(y, x, this.picture.get(x, y));
             }
         }
-
-        this.p = tmp;
-        int t = width();
-        this.width = height();
-        this.height = t;
+        SeamCarver transposeSearCarver = new SeamCarver(transposePicture);
+        return transposeSearCarver.findVerticalSeam();
     }
-
 
     public int[] findVerticalSeam() {
-        int[] result = new int[height()];
-        double[][] minCost = new double[width()][height()];
-
-        // compute minCost for each element
-        for (int i = 0; i < width(); i++) {
-            minCost[i][0] = energy(i, 0);
+        LinkedList<Integer>[] preAllSeam = new LinkedList[picture.width()];
+        LinkedList<Integer>[] allSeam = new LinkedList[picture.width()];
+        for (int i = 0; i < picture.width(); i++) {
+            preAllSeam[i] = new LinkedList<>();
         }
-
-        for (int j = 1; j < height(); j++) {
-            for (int i = 0; i < width(); i++) {
-                if (i == 0) {
-                    minCost[i][j] = energy(i, j) + Math.min(minCost[i][j - 1], minCost[i + 1][j - 1]);
-                } else if (i == width() - 1) {
-                    minCost[i][j] = energy(i, j) + Math.min(minCost[i - 1][j - 1], minCost[i][j - 1]);
-                } else {
-                    double smallest = Math.min(Math.min(minCost[i][j - 1], minCost[i - 1][j - 1]),  minCost[i + 1][j - 1]);
-                    minCost[i][j] = energy(i, j) + smallest;
-                    if (minCost[i - 1][j - 1] == smallest) {
-                        result[j - 1] = i - 1;
-                    } else if (minCost[i][j - 1] == smallest) {
-                        result[j - 1] = i;
-                    } else {
-                        result[j - 1] = i + 1;
-                    }
-                }
+        double[] preEnergy = new double[picture.width()];
+        double[] totalEnergy = new double[picture.width()];
+        int minPreIndex;
+        int minTotalIndex = 0;
+        int[] seam = new int[picture.height()];
+        for (int x = 0; x < picture.width(); x++) {
+            preEnergy[x] = energy(x, 0);
+            totalEnergy[x] = energy(x, 0);
+            preAllSeam[x].add(x);
+        }
+        for (int y = 1; y < picture.height(); y++) {
+            for (int x = 0; x < picture.width(); x++) {
+                allSeam[x] = new LinkedList<>();
+                minPreIndex = minPreEnergyIndex(x, preEnergy);
+                totalEnergy[x] = energy(x, y) + preEnergy[minPreIndex];
+                allSeam[x].addAll(preAllSeam[minPreIndex]);
+                allSeam[x].add(x);
             }
-        }
-
-        double min = minCost[0][height() - 1];
-        int minIndex = 0;
-        for (int i = 0; i < width(); i++) {
-            if (min > minCost[i][height() - 1]) {
-                min = minCost[i][height() - 1];
-                minIndex = i;
+            for (int x = 0; x < picture.width(); x++) {
+                preAllSeam[x] = new LinkedList<>();
+                preAllSeam[x].addAll(allSeam[x]);
             }
+            System.arraycopy(totalEnergy, 0, preEnergy, 0, picture.width());
         }
-        result[height() - 1] = minIndex;
-
-        int i = minIndex;
-        for (int j = height() - 1; j > 0; j--) {
-            if (i == 0) {
-                if (minCost[i][j - 1] < minCost[i + 1][j - 1]) {
-                    result[j - 1] = i;
-                } else {
-                    result[j - 1] = i + 1;
-                }
-            } else if (i == width() - 1) {
-                if (minCost[i][j - 1] < minCost[i - 1][j - 1]) {
-                    result[j - 1] = i;
-                } else {
-                    result[j - 1] = i - 1;
-                }
-            } else {
-                double smallest = Math.min(Math.min(minCost[i][j - 1], minCost[i - 1][j - 1]),  minCost[i + 1][j - 1]);
-                if (minCost[i - 1][j - 1] == smallest) {
-                    result[j - 1] = i - 1;
-                } else if (minCost[i][j - 1] == smallest) {
-                    result[j - 1] = i;
-                } else {
-                    result[j - 1] = i + 1;
-                }
-            }
-            i = result[j - 1];
+        for (int x = 0; x < picture.width(); x++) {
+            minTotalIndex = totalEnergy[minTotalIndex] < totalEnergy[x] ? minTotalIndex : x;
         }
-
-        return result;
+        for (int i = 0; i < seam.length; i++) {
+            seam[i] = allSeam[minTotalIndex].removeFirst();
+        }
+        return seam;
+    }
+    private int minPreEnergyIndex(int x, double[] preEnergy) {
+        if (x == 0) {
+            return preEnergy[0] < preEnergy[1] ? 0 : 1;
+        } else if (x == picture.width() - 1) {
+            return preEnergy[picture.width() - 1] < preEnergy[picture.width() - 2]
+                    ? picture.width() - 1 : picture.width() - 2;
+        } else {
+            return threeMinIndex(x - 1, x, x + 1, preEnergy);
+        }
+    }
+    private int threeMinIndex(int a, int b, int c, double[] preEnergy) {
+        int minIndex;
+        minIndex = preEnergy[a] < preEnergy[b] ? a : b;
+        minIndex = preEnergy[minIndex] < preEnergy[c] ? minIndex : c;
+        return minIndex;
     }
 
     public void removeHorizontalSeam(int[] seam) {
-        if (validateSeam(seam)) {
-            SeamRemover rm = new SeamRemover();
-            this.p = rm.removeHorizontalSeam(p, seam);
-            this.height--;
-        } else {
-            throw new IllegalArgumentException();
-        }
+        SeamRemover.removeHorizontalSeam(picture, seam);
     }
-
     public void removeVerticalSeam(int[] seam) {
-        if (validateSeam(seam)) {
-            SeamRemover rm = new SeamRemover();
-            this.p = rm.removeVerticalSeam(p, seam);
-            this.width--;
-        } else {
-            throw new IllegalArgumentException();
-        }
+        SeamRemover.removeVerticalSeam(picture, seam);
     }
 
-    private boolean validateSeam(int[] seam) {
-        for (int i = 0; i < seam.length - 1; i++) {
-            if (Math.abs(seam[1] - seam[i + 1]) > 1) {
-                return false;
-            }
-        }
-        return true;
-    }
 }
