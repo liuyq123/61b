@@ -25,6 +25,14 @@ public class SeamCarver {
 
     // x: column, y: row
     public double energy(int x, int y) {
+        if (x < 0 || x >= width()) {
+            throw new java.lang.IndexOutOfBoundsException();
+        }
+
+        if (y < 0 || y >= height()) {
+            throw new java.lang.IndexOutOfBoundsException();
+        }
+
         double deltaXR = picture().get((x + 1) % width(), y).getRed() - picture().get((x - 1 + width()) % width(), y).getRed();
         double deltaYR = picture().get(x, (y + 1) % height()).getRed() - picture().get(x, (y - 1 + height()) % height()).getRed();
         double deltaXG = picture().get((x + 1) % width(), y).getGreen() - picture().get((x - 1 + width()) % width(), y).getGreen();
@@ -128,12 +136,31 @@ public class SeamCarver {
     }
 
     public void removeHorizontalSeam(int[] seam) {
-        SeamRemover rm = new SeamRemover();
-        this.p = rm.removeHorizontalSeam(p, seam);
+        if (validateSeam(seam)) {
+            SeamRemover rm = new SeamRemover();
+            this.p = rm.removeHorizontalSeam(p, seam);
+            this.height--;
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public void removeVerticalSeam(int[] seam) {
-        SeamRemover rm = new SeamRemover();
-        this.p = rm.removeVerticalSeam(p, seam);
+        if (validateSeam(seam)) {
+            SeamRemover rm = new SeamRemover();
+            this.p = rm.removeVerticalSeam(p, seam);
+            this.width--;
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private boolean validateSeam(int[] seam) {
+        for (int i = 0; i < seam.length - 1; i++) {
+            if (Math.abs(seam[1] - seam[i + 1]) > 1) {
+                return false;
+            }
+        }
+        return true;
     }
 }
